@@ -3,14 +3,17 @@
 
 #? Setup a SQL database with the table user_data:
 create table user_data(
-    user_id UUID PRIMARY KEY NOT NULL,
+    user_id UUID DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     age DECIMAL NOT NULL
 );
 
-#? Populate the database with sample data from [user_data.csv]
 
+#? Populate the database with sample data from [user_data.csv]
+insert into user_data (name, email, age) values ('Johnnie Mayer','Ross.Reynolds21@hotmail.com',35);
+
+#? Functions
 #* def connect_db() -> connects to the database
 #* def create_db(connection) -> creates the database [ALX_prodev] if it does not exist
 #* def connect_to_prodev(connection) -> connects the [ALX_prodev] database in SQL
@@ -42,7 +45,7 @@ def insert_data(connection: Any, data: Any):
 
 
 def main():
-    print("hello test")
+    pass
 
 
 if __name__ == "__main__":
