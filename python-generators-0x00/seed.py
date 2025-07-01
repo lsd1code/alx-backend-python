@@ -22,31 +22,57 @@ insert into user_data (name, email, age) values ('Johnnie Mayer','Ross.Reynolds2
 """
 
 from typing import Any
+import asyncio
+from psycopg2 import connect
+from psycopg2.extensions import connection
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
-def connect_db():
+async def connect_db():
+    """
+    ! Coroutine for connecting to a Database
+    """
+
+    USER = os.getenv("USER")
+    PASSWORD = os.getenv("PASSWORD")
+    DATABASE = os.getenv("DATABASE")
+    PORT = os.getenv("PORT")
+
+    try:
+        conn: connection = connect(
+            dbname=DATABASE, user=USER, password=PASSWORD, port=PORT
+        )
+
+        print("Connected to the DB...")
+
+        return conn
+
+    except Exception as e:
+        print(f'Exception:', e)
+
+
+def create_db(conn: connection):
     pass
 
 
-def create_db(connection: Any):
+def connect_to_prodev(conn: connection):
     pass
 
 
-def connect_to_prodev(connection: Any):
+def create_table(conn: connection):
     pass
 
 
-def create_table(connection: Any):
+def insert_data(conn: connection, data: Any):
     pass
 
 
-def insert_data(connection: Any, data: Any):
-    pass
-
-
-def main():
-    pass
+async def main():
+    await connect_db()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
