@@ -21,7 +21,6 @@ insert into user_data (name, email, age) values ('Johnnie Mayer','Ross.Reynolds2
 #* def insert_data(connection, data) -> inserts data in the database if it doesn't exist
 """
 
-from typing import Any
 import asyncio
 from psycopg2 import connect, DatabaseError
 from psycopg2.extensions import connection
@@ -41,7 +40,7 @@ class User:
         return f'[name: {self.name}, email: {self.email}, age: {self.age}]'
 
 
-async def connect_db():
+def connect_db():
     """
     ! Coroutine for connecting to a Database
 
@@ -68,7 +67,7 @@ async def connect_db():
         raise e
 
 
-async def create_db(conn: connection):
+def create_db(conn: connection):
     """
     Creates the 'ALX_prodev' database if it does not already exist.
     Args:
@@ -83,10 +82,11 @@ async def create_db(conn: connection):
         conn.autocommit = True
 
         with conn.cursor() as cursor:
-            cursor.execute("SELECT 1 FROM pg_database WHERE datname = 'alx_prodev';")
-            
+            cursor.execute(
+                "SELECT 1 FROM pg_database WHERE datname = 'alx_prodev';")
+
             exists = cursor.fetchone()
-            
+
             if not exists:
                 cursor.execute("CREATE DATABASE ALX_prodev;")
                 print("Database 'ALX_prodev' created.")
@@ -100,7 +100,7 @@ async def create_db(conn: connection):
         conn.autocommit = False
 
 
-async def insert_data(conn: connection, data: User):
+def insert_data(conn: connection, data: User):
     """
     ! Inserts a new user record into the user_data table and returns the generated user_id.
     Args:
@@ -135,15 +135,16 @@ async def insert_data(conn: connection, data: User):
         conn.close()
 
 
-async def connect_to_prodev(conn: connection):
+def connect_to_prodev(conn: connection):
     """
     connects the [alx_prodev] database
     """
     try:
         conn.autocommit = True
-                
+
         with conn.cursor() as cursor:
-            cursor.execute("SELECT 1 FROM pg_database WHERE datname = 'alx_prodev';")
+            cursor.execute(
+                "SELECT 1 FROM pg_database WHERE datname = 'alx_prodev';")
             exists = cursor.fetchone()
 
             if exists:
@@ -157,7 +158,7 @@ async def connect_to_prodev(conn: connection):
         conn.autocommit = False
 
 
-async def create_table(conn: connection):
+def create_table(conn: connection):
     try:
         command = """
         CREATE TABLE user_data(
@@ -169,17 +170,17 @@ async def create_table(conn: connection):
         """
         with conn.cursor() as cursor:
             cursor.execute(command)
-        
+
     except Exception as e:
         print(f'Error: {e}')
 
 
-async def main():
-    conn: connection = await connect_db()
+def main():
+    conn: connection = connect_db()
 
-    await create_db(conn)
-    await connect_to_prodev(conn)
-    await insert_data(conn, User('Hero Scxxt', 'hero@mail.com', 25))
+    create_db(conn)
+    connect_to_prodev(conn)
+    insert_data(conn, User('Hero Scxxt', 'hero@mail.com', 25))
 
     with conn.cursor() as cursor:
         command = """SELECT * FROM user_data;"""
@@ -194,4 +195,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
