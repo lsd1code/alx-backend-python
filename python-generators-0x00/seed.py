@@ -21,7 +21,6 @@ insert into user_data (name, email, age) values ('Johnnie Mayer','Ross.Reynolds2
 #* def insert_data(connection, data) -> inserts data in the database if it doesn't exist
 """
 
-import asyncio
 from psycopg2 import connect, DatabaseError
 from psycopg2.extensions import connection
 from dotenv import load_dotenv
@@ -42,7 +41,7 @@ class User:
 
 def connect_db():
     """
-    ! Coroutine for connecting to a Database
+    Function for connecting to a Database
 
     Asynchronously establishes a connection to a database using credentials and configuration
     retrieved from environment variables. If the connection is successful, returns the connection
@@ -102,7 +101,7 @@ def create_db(conn: connection):
 
 def insert_data(conn: connection, data: User):
     """
-    ! Inserts a new user record into the user_data table and returns the generated user_id.
+    Inserts a new user record into the user_data table and returns the generated user_id.
     Args:
         conn (connection): Database connection object.
         data (User): User object containing name, email, and age.
