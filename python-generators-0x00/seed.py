@@ -30,12 +30,13 @@ import os
 
 load_dotenv()  # loading env variables from .env file
 
+
 class User:
     def __init__(self, name: str, email: str, age: int) -> None:
         self.name = name
         self.email = email
         self.age = age
-    
+
     def __str__(self) -> str:
         return f'[name: {self.name}, email: {self.email}, age: {self.age}]'
 
@@ -82,9 +83,31 @@ def create_db(conn: connection):
 
 def insert_data(conn: connection, data: User):
     """
-    Insert User into the user_data table
+    ! Inserts a new user record into the user_data table and returns the generated user_id.
+    Args:
+        conn (connection): Database connection object.
+        data (User): User object containing name, email, and age.
+    Returns:
+        str: The user_id of the newly inserted user.
+    """
+    user_id = ""
+    command = """
+    INSERT INTO user_data (name, email, age) VALUES (%s, %s, %s)
+        RETURNING user_id;
     """
 
+    with conn.cursor() as cursor:
+        cursor.execute(command, (data.name, data.email, data.age))
+
+        rows = cursor.fetchone()
+
+        if rows:
+            user_id = rows[0]
+            print(f'User created:', user_id)
+
+        conn.commit()
+
+        return user_id
     try:
         pass
     except DatabaseError as de:
@@ -117,7 +140,24 @@ async def create_table(conn: connection):
 
 
 async def main():
-    
+    data: User = User('lesedi bale', 'lsd@mail.com', 25)
+
+    conn: connection = await connect_db()
+
+    user_id = insert_data(conn, data)
+
+    print(f'User ID: {user_id}')
+
+    with conn.cursor() as cursor:
+        command = """SELECT * FROM user_data;"""
+        cursor.execute(command)
+
+        rows = cursor.fetchall()
+
+        print("Num rows:", cursor.rowcount)
+
+        for r in rows:
+            print(r)
 
 
 if __name__ == "__main__":
