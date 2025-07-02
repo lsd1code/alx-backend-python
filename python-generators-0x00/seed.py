@@ -23,17 +23,34 @@ insert into user_data (name, email, age) values ('Johnnie Mayer','Ross.Reynolds2
 
 from typing import Any
 import asyncio
-from psycopg2 import connect
+from psycopg2 import connect, DatabaseError
 from psycopg2.extensions import connection
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv()  # loading env variables from .env file
+
+class User:
+    def __init__(self, name: str, email: str, age: int) -> None:
+        self.name = name
+        self.email = email
+        self.age = age
+    
+    def __str__(self) -> str:
+        return f'[name: {self.name}, email: {self.email}, age: {self.age}]'
 
 
 async def connect_db():
     """
     ! Coroutine for connecting to a Database
+
+    Asynchronously establishes a connection to a database using credentials and configuration
+    retrieved from environment variables. If the connection is successful, returns the connection
+    object; otherwise, prints the exception encountered.
+    Returns:
+        connection: A database connection object if successful.
+    Raises:
+        Exception: If the connection to the database fails.
     """
 
     USER = os.getenv("USER")
@@ -43,35 +60,64 @@ async def connect_db():
 
     try:
         conn: connection = connect(
-            dbname=DATABASE, user=USER, password=PASSWORD, port=PORT
-        )
-
-        print("Connected to the DB...")
-
+            dbname=DATABASE, user=USER, password=PASSWORD, port=PORT)
         return conn
-
-    except Exception as e:
-        print(f'Exception:', e)
+    except (DatabaseError) as e:
+        print(f'Failed to connect to the database: {e}')
+        raise e
 
 
 def create_db(conn: connection):
-    pass
+    """
+    Creates the 'ALX_prodev' database if it does not already exist.
+    Args:
+        conn (connection): A database connection object used to execute SQL commands.
+    Raises:
+        Exception: If there is an error during database creation.
+    Returns:
+        None
+    creates the database [ALX_prodev] if it does not exist
+    """
+
+
+def insert_data(conn: connection, data: User):
+    """
+    Insert User into the user_data table
+    """
+
+    try:
+        pass
+    except DatabaseError as de:
+        print(f'Error: {de}')
+    finally:
+        conn.close()
 
 
 def connect_to_prodev(conn: connection):
     pass
 
 
-def create_table(conn: connection):
-    pass
+async def create_table(conn: connection):
+    try:
+        command = """
+        CREATE TABLE user_data(
+            user_id UUID DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            age DECIMAL NOT NULL
+        )
+        """
+        with conn.cursor() as cursor:
+            cursor.execute(command)
 
-
-def insert_data(conn: connection, data: Any):
-    pass
+    except Exception as e:
+        print(f'Error: {e}')
+    finally:
+        conn.close()
 
 
 async def main():
-    await connect_db()
+    
 
 
 if __name__ == "__main__":
