@@ -7,7 +7,6 @@
 """
 
 from seed import connect_db
-from psycopg2.extensions import connection
 
 
 def stream_users():
@@ -21,18 +20,17 @@ def stream_users():
     Raises:
         Any exceptions raised by the database connection or query execution.
     """
-    
+
     try:
-        conn: connection = connect_db()
-        command: str = """SELECT * FROM user_data;"""
+        with connect_db() as conn:
+            with conn.cursor() as cursor:
+                command: str = """SELECT * FROM user_data;"""
+                cursor.execute(command)
+                rows = cursor.fetchall()
 
-        with conn.cursor() as cursor:
-            cursor.execute(command)
-            rows = cursor.fetchall()
-
-            if rows:
-                for row in rows:
-                    yield row
+                if rows:
+                    for row in rows:
+                        yield row
 
     except Exception as e:
         print(f'Error: {e}')
