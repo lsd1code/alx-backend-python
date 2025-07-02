@@ -16,7 +16,7 @@ insert into user_data (name, email, age) values ('Johnnie Mayer','Ross.Reynolds2
 #? Functions
 #* def connect_db() -> connects to the database
 #* def create_db(connection) -> creates the database [ALX_prodev] if it does not exist
-#* def connect_to_prodev(connection) -> connects the [ALX_prodev] database in SQL
+#* def connect_to_prodev(connection) -> connects the [ALX_prodev] database
 #* def create_table(connection) -> creates a table `user_data` if does not exist with required fields 
 #* def insert_data(connection, data) -> inserts data in the database if it doesn't exist
 """
@@ -68,7 +68,7 @@ async def connect_db():
         raise e
 
 
-def create_db(conn: connection):
+async def create_db(conn: connection):
     """
     Creates the 'ALX_prodev' database if it does not already exist.
     Args:
@@ -79,9 +79,28 @@ def create_db(conn: connection):
         None
     creates the database [ALX_prodev] if it does not exist
     """
+    try:
+        conn.autocommit = True
+
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM pg_database WHERE datname = 'alx_prodev';")
+            
+            exists = cursor.fetchone()
+            
+            if not exists:
+                cursor.execute("CREATE DATABASE ALX_prodev;")
+                print("Database 'ALX_prodev' created.")
+            else:
+                print("Database 'ALX_prodev' already exists.")
+
+    except Exception as e:
+        print(f"Error creating database: {e}")
+        raise
+    finally:
+        conn.autocommit = False
 
 
-def insert_data(conn: connection, data: User):
+async def insert_data(conn: connection, data: User):
     """
     ! Inserts a new user record into the user_data table and returns the generated user_id.
     Args:
@@ -116,8 +135,26 @@ def insert_data(conn: connection, data: User):
         conn.close()
 
 
-def connect_to_prodev(conn: connection):
-    pass
+async def connect_to_prodev(conn: connection):
+    """
+    connects the [alx_prodev] database
+    """
+    try:
+        conn.autocommit = True
+                
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM pg_database WHERE datname = 'alx_prodev';")
+            exists = cursor.fetchone()
+
+            if exists:
+                print("Connected to 'alx_prodev' database.")
+            else:
+                print("'alx_prodev' database does not exist.")
+    except Exception as e:
+        print(f"Error connecting to 'alx_prodev': {e}")
+        raise
+    finally:
+        conn.autocommit = False
 
 
 async def create_table(conn: connection):
@@ -132,21 +169,17 @@ async def create_table(conn: connection):
         """
         with conn.cursor() as cursor:
             cursor.execute(command)
-
+        
     except Exception as e:
         print(f'Error: {e}')
-    finally:
-        conn.close()
 
 
 async def main():
-    data: User = User('lesedi bale', 'lsd@mail.com', 25)
-
     conn: connection = await connect_db()
 
-    user_id = insert_data(conn, data)
-
-    print(f'User ID: {user_id}')
+    await create_db(conn)
+    await connect_to_prodev(conn)
+    await insert_data(conn, User('Hero Scxxt', 'hero@mail.com', 25))
 
     with conn.cursor() as cursor:
         command = """SELECT * FROM user_data;"""
