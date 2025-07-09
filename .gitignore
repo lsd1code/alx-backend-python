@@ -1,3 +1,5 @@
 .vscode
 python-generators-0x00/.env
+python-decorators-0x01/.env
+.env
 test
