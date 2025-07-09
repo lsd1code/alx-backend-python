@@ -14,6 +14,7 @@ from typing import Any
 from psycopg2 import connect, DatabaseError
 from psycopg2.extensions import connection
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 import logging
 
@@ -53,8 +54,8 @@ def log_queries(function):  # type: ignore
         logger = logging.getLogger(__name__)
 
         # TODO: log query before executing it
-        logger.info(f'LOG: {args[0]}')
-        print(f'QUERY: {args[0]}')
+        logger.info(f'QUERY: {args[0]} - {datetime.now()}')
+        print(f'QUERY: {args[0]} - {datetime.now()}')
 
         function(*args, **kwargs)
 
