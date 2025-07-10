@@ -18,29 +18,50 @@ import os  # type:ignore
 
 load_dotenv()
 
-with_db_connection = __import__('1-with_db_connection.with_db_connection')
+
+def connect_db():
+    try:
+        USER = os.getenv("USER")
+        PASSWORD = os.getenv("PASSWORD")
+        DATABASE = os.getenv("DATABASE")
+        PORT = os.getenv("PORT")
+
+        conn: connection = connect(
+            dbname=DATABASE, user=USER, password=PASSWORD, port=PORT)
+        return conn
+    except (DatabaseError) as e:
+        print(f'Failed to connect to the database: {e}')
+        raise e
 
 
 def transactional(function: Any):
-    pass
+    def wrapper(*args: Any, **kwargs: Any):
+        with connect_db() as conn:
+            function(*args, conn)
 
-@with_db_connection
-def get_user_by_id(*args: Any):
-    conn: connection = args[1]
+    return wrapper
+
+
+@transactional
+def update_user_email(*args: Any):
     user_id: str = args[0]
+    email: str = args[1]
+    conn: connection = args[2]
 
     with conn.cursor() as cursor:
-        cursor.execute(
-            'SELECT * FROM user_data WHERE user_id = %s;', (user_id,))
-        rows = cursor.fetchall()
+        try:
+            query = "UPDATE user_data SET email = %s WHERE user_id = %s"
+            cursor.execute(query, (email, user_id))
+            conn.commit()
 
-        if rows:
-            for r in rows:
-                print(r)
+        except DatabaseError as db_err:
+            print(f'Exception: {db_err}')
+            conn.rollback()
 
 
 def main():
-    get_user_by_id("bcfb0c90-3d44-4806-8cb4-5763ed77f796")
+    update_user_email("bcfb0c90-3d44-4806-8cb4-5763ed77f796",
+                      "updatedemail@mail.com")
 
 
 if __name__ == '__main__':

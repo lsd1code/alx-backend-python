@@ -51,18 +51,17 @@ def fetch_users_with_cache(*args: Any):
 
     if query_cache.get(query):
         print('Cache HIT')
-        print(query_cache)
         return query_cache.get(query)
     
     conn: connection = args[1]
 
     with conn.cursor() as cursor:
-        result = cursor.execute(query)  # type: ignore
+        cursor.execute(query)
         rows = cursor.fetchall()
 
         if rows:
             query_cache[query] = rows
-            print(query_cache)
+            return query_cache[query]
 
 
 def main():
