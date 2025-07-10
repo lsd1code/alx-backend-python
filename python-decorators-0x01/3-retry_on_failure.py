@@ -36,7 +36,6 @@ def connect_db():
 def retry_on_failure(retries: int, delay: int):
     def retry(function: Any):
         def wrapper(*args: Any, **kwargs: Any):
-
             for attempt in range(retries + 1):
                 try:
                     with connect_db() as conn:
