@@ -25,18 +25,20 @@ import asyncio
 import aiosqlite
 
 
-async def asyncfetchusers():
+async def async_fetch_users():
     async with aiosqlite.connect("users.db") as cursor:
         async with cursor.execute('SELECT * FROM users') as results:
-            async for row in results:
-                print(row)
+            return results
+            # async for row in results:
+            #     print(row)
 
 
-async def asyncfetcholder_users():
+async def async_fetch_older_users():
     async with aiosqlite.connect("users.db") as cursor:
         async with cursor.execute('SELECT * FROM users u WHERE u.age > 40;') as results:
-            async for row in results:
-                print(row)
+            return results
+            # async for row in results:
+            #     print(row)
 
 
 async def fetch_concurrently():
