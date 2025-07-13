@@ -10,7 +10,7 @@ Instructions:
     Use the context manager with the with statement to be able to perform the query SELECT * FROM users. Print the results from the query.
 """
 
-from typing import Any
+# from typing import Any
 # from psycopg2.extensions import connection
 from psycopg2 import connect, DatabaseError
 from dotenv import load_dotenv

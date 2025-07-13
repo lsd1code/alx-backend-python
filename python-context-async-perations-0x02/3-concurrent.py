@@ -12,12 +12,36 @@ Instructions:
     Use the asyncio.gather() to execute both queries concurrently.
 
     Use asyncio.run(fetch_concurrently()) to run the concurrent fetch
+
+    ! Users Table
+    CREATE TABLE users (
+        username TEXT NOT NULL,
+        email TEXT NOT NULL,
+        age DECIMAL NOT NULL
+    );
 """
 
+import asyncio
+import aiosqlite
 
-def main():
-    pass
 
+async def async_fetch_users():
+    async with aiosqlite.connect("users.db") as cursor:
+        async with cursor.execute('SELECT * FROM users') as results:
+            async for row in results:
+                print(row)
+
+
+async def async_fetch_older_users():
+    async with aiosqlite.connect("users.db") as cursor:
+        async with cursor.execute('SELECT * FROM users u WHERE u.age > 40;') as results:
+            async for row in results:
+                print(row)
+
+
+async def fetch_concurrently():
+    await asyncio.gather(
+        async_fetch_users(), async_fetch_older_users())
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(fetch_concurrently())

@@ -51,7 +51,7 @@ class ExecuteQuery:
 
 
 def main():
-    QUERY = "SELECT * FROM user_data WHERE age > 25;"
+    QUERY = "SELECT * FROM user_data WHERE age >= 25;"
     PARAM = 25
 
     with ExecuteQuery(query=QUERY, param=PARAM) as result:
