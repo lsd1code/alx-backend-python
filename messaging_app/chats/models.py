@@ -10,7 +10,7 @@ class RoleChoices(models.TextChoices):
   ADMIN = "admin"
 
 
-class user(AbstractBaseUser):
+class User(AbstractBaseUser):
   user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   first_name = models.CharField(max_length=255, null=False) 
   last_name = models.CharField(max_length=255, null=False) 
@@ -29,9 +29,9 @@ class user(AbstractBaseUser):
     return f'User {self.user_id}: {self.first_name.capitalize()} {self.last_name.capitalize()}' 
   
   
-class message(models.Model):
+class Message(models.Model):
   message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  sender_id = models.OneToOneField(user, on_delete=models.CASCADE, related_name="message")
+  sender_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name="message")
   message_body = models.CharField(max_length=255, blank=False, null=False)
   sent_at = models.DateField(auto_now=True)
   
@@ -39,9 +39,9 @@ class message(models.Model):
     return f'{self.message_id}: {self.message_body}'
   
   
-class conversation(models.Model):
+class Conversation(models.Model):
   conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  participants_id = models.ForeignKey(user, on_delete=models.CASCADE, related_name="conversation")
+  participants_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversation")
   created_at = models.DateField(auto_now=True)
   
   def __str__(self) -> str:
