@@ -41,7 +41,7 @@ class Message(models.Model):
   
 class Conversation(models.Model):
   conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  participants_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversation")
+  participants_id = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="conversation", blank=True)
   created_at = models.DateField(auto_now=True)
   
   def __str__(self) -> str:
