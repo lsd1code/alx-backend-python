@@ -84,8 +84,13 @@ def memoize(fn: Callable) -> Callable:
     return property(memoized)
 
 
-seq = ['a',]
-dictionary = {'a': {'b': 2}}
+# seq = ['a',]
+# dictionary = {'a': {'b': 2}}
 
-result = access_nested_map({'a': {'b': 2}}, ['a', 'b'])
+# result = access_nested_map({'a': {'b': 2}}, ['a', 'b'])
 # print(result)
+
+
+if __name__ == "__main__":
+    result = get_json("https://jsonplaceholder.typicode.com/users")
+    print(result)
