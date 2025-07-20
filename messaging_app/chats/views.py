@@ -1,20 +1,31 @@
 from django.shortcuts import render
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 
 from .models import User, Message, Conversation
 
-# Create your views here.
+from .serializers import *
+from rest_framework import viewsets
+from rest_framework.response import Response
+
+
+class UserViewSet:
+    def list(self, req: HttpRequest):
+        query_set = User.objects.all()
+        serializer = UserSerializer(query_set, many=True)
+
+        return Response(serializer.data)
+
+
+class ConversationViewSet:
+    pass
+
+
+class MessageViewSet:
+    pass
+
+
 def index(req: HttpRequest):
-  users = User.objects.all()
-  
-  u1 = users.first()
-  u2 = users.first()
-  
-  m1 = Message(sender_id=u1, message_body="This is message 1")
-  m2 = Message(sender_id=u2, message_body="This is message 1")
-  
-  convo = Conversation()
-  convo.save()
-  
-  
-  return HttpResponse(f"Users:")
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+
+    return JsonResponse({'data': serializer.data})
