@@ -1,18 +1,17 @@
 from django.urls import path, include
 from .views import index, UserViewSet, ConversationViewSet, MessageViewSet
 
-from rest_framework.routers import DefaultRouter
+from rest_framework import routers
 
-routers = DefaultRouter()
-routers.register('conversation', ConversationViewSet, basename="conversations")
-routers.register('user', UserViewSet, basename="user")
-routers.register('message', MessageViewSet, basename="message")
+router = routers.DefaultRouter()
+router.register('conversation', ConversationViewSet, basename="conversations")
+router.register('user', UserViewSet, basename="user")
+router.register('message', MessageViewSet, basename="message")
 
 
 urlpatterns = [
     path('', index, name="index"),
     # path('users', UserViewSet.as_view(), name='users')
-]
+].append(router.urls)
 
 
-urlpatterns += routers.urls
