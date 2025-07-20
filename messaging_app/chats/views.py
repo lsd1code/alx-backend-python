@@ -8,10 +8,11 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 
-class UserViewSet:
+class UserViewSet(viewsets.ViewSet):
     def list(self, req: HttpRequest):
         query_set = User.objects.all()
         serializer = UserSerializer(query_set, many=True)
+        permission_classes = [AllowAny]
 
         return Response(serializer.data)
 

@@ -16,6 +16,7 @@ class MessageSerializer(serializers.ModelSerializer):
     def validate_message(self, data):
         if len(str(data['message_body'])) < 1:
             raise serializers.ValidationError("Message body cannot be empty")
+
     
     class Meta:
         model = Message
