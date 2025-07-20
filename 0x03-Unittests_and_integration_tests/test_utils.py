@@ -21,6 +21,13 @@ from parameterized import parameterized
 
 
 class TestAccessNestedMap(unittest.TestCase):
+    """
+    Test cases for the `access_nested_map` function.
+
+    This class validates the functionality of the `access_nested_map` function
+    which retrieves values from nested dictionaries using a sequence of keys.
+    It tests both valid access patterns and error handling for invalid paths.
+    """
 
     @parameterized.expand([  # type:ignore
         ({'a': 1}, ['a'], 1),
@@ -41,6 +48,14 @@ class TestAccessNestedMap(unittest.TestCase):
 
 
 class TestGetJson(unittest.TestCase):
+    """
+    Test cases for the `get_json` function.
+
+    This class validates the functionality of the `get_json` function which 
+    retrieves JSON payloads from remote URLs. Tests use mocking to avoid actual 
+    HTTP requests and verify both network interaction and payload handling.
+    """
+
     @parameterized.expand([  # type:ignore
         ("http://example.com", {"payload": True}),
         ("http://holberton.io", {"payload": False}),
@@ -58,6 +73,13 @@ class TestGetJson(unittest.TestCase):
 
 
 class TestMemoize(unittest.TestCase):
+    """Test cases for the `memoize` decorator.
+    
+    This class validates the caching functionality of the memoize decorator.
+    It verifies that method results are properly cached and that subsequent
+    calls return the cached result without re-executing the original method.
+    """
+
     def test_memoize(self):
         class TestClass:
             def a_method(self):
@@ -66,17 +88,17 @@ class TestMemoize(unittest.TestCase):
             @memoize
             def a_property(self):
                 return self.a_method()
-            
+
         with patch.object(TestClass, 'a_method') as mock_method:
             mock_method.return_value = 42
             instance = TestClass()
-            
+
             result1 = instance.a_property
             result2 = instance.a_property
-            
+
             self.assertEqual(result1, 42)
             self.assertEqual(result2, 42)
-            
+
             mock_method.assert_called_once()
 
 
