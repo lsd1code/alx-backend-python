@@ -30,12 +30,15 @@ class TestAccessNestedMap(unittest.TestCase):
 
 
     @parameterized.expand([  # type:ignore
-        ({'a': 1}, ['a'], 1),
-        ({'a': {'b': 2}}, ['a',], {'b': 2}),
-        ({'a': {'b': 2}}, ['a', 'b'], 2)
+        ({}, ['a'], KeyError),
+        ({'a': 1}, ['a', 'b'], KeyError),
     ])
-    def test_access_nested_map_exception(self, nested_map: dict[str, Any], path: list[str], expected: int):
-        pass
+    def test_access_nested_map_exception(self, nested_map: dict[str, Any], path: list[str], expected: Any):
+        if expected == KeyError:
+            with self.assertRaises(KeyError):
+                access_nested_map(nested_map=nested_map, path=path)
+
+        # self.assertRaises(access_nested_map(nested_map=nested_map, path=path), expected)
 
 
 if __name__ == "__main__":
