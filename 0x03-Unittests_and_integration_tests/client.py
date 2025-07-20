@@ -13,6 +13,8 @@ from utils import (
     memoize,
 )
 
+import requests
+
 
 class GithubOrgClient:
     """A Githib org client

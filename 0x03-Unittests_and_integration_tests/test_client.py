@@ -2,10 +2,10 @@
 
 from typing import Any, Dict
 import unittest
-from unittest.mock import patch, PropertyMock
-from parameterized import parameterized
+from unittest.mock import Mock, patch, PropertyMock
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
-
+import requests
 
 class TestGithubOrgClient(unittest.TestCase):
     """Test cases for GithubOrgClient.org method."""
@@ -128,12 +128,12 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     def test_has_license(self, repo: Dict[str, Any], license_key: str, expected: bool):
         """Test license detection in repository data.
-        
+
         Verifies that has_license correctly identifies:
         - When a repo has the specified license
         - When a repo has a different license
         - Edge cases (missing license data)
-        
+
         Args:
             repo: Repository data structure
             license_key: License identifier to check
@@ -141,6 +141,89 @@ class TestGithubOrgClient(unittest.TestCase):
         """
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
+
+
+org_payload = {
+    "login": "test_org",
+    "id": 123456,
+    "repos_url": "https://api.github.com/orgs/test_org/repos"
+}
+
+repos_payload = [
+    {"name": "repo1", "license": {"key": "apache-2.0"}},
+    {"name": "repo2", "license": {"key": "mit"}},
+    {"name": "repo3", "license": {"key": "apache-2.0"}}
+]
+
+expected_repos = ["repo1", "repo2", "repo3"]
+apache2_repos = ["repo1", "repo3"]
+
+
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient with mocked HTTP requests."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up class-wide test environment.
+
+        Mocks requests.get to return fixture data based on requested URL.
+        """
+        # Define URL patterns
+        cls.org_url = "https://api.github.com/orgs/{org}"
+        cls.repos_url = org_payload["repos_url"]
+
+        # Define side effect function for requests.get
+        def get_side_effect(url, *args, **kwargs):
+            mock_response = Mock()
+            # Route to appropriate fixture based on URL
+            if url == cls.org_url.format(org="test_org"):
+                mock_response.json.return_value = cls.org_payload
+            elif url == cls.repos_url:
+                mock_response.json.return_value = cls.repos_payload
+            else:
+                # Default empty response for unexpected URLs
+                mock_response.json.return_value = {}
+            return mock_response
+
+        # Start patcher with side effect
+        cls.get_patcher = patch('client.requests.get',
+                                side_effect=get_side_effect)
+        cls.mock_get = cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up after all tests have run."""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test repository listing without license filtering."""
+        client = GithubOrgClient("test_org")
+        repos = client.public_repos()
+        self.assertEqual(repos, self.expected_repos)
+
+        # Verify API calls
+        self.assertEqual(self.mock_get.call_count, 2)
+        self.mock_get.assert_any_call(self.org_url.format(org="test_org"))
+        self.mock_get.assert_any_call(self.repos_url)
+
+    def test_public_repos_with_license(self):
+        """Test repository listing with Apache 2.0 license filtering."""
+        client = GithubOrgClient("test_org")
+        repos = client.public_repos(license="apache-2.0")
+        self.assertEqual(repos, self.apache2_repos)
+
+        # Verify API calls
+        self.assertEqual(self.mock_get.call_count, 2)
+        self.mock_get.assert_any_call(self.org_url.format(org="test_org"))
+        self.mock_get.assert_any_call(self.repos_url)
 
 
 if __name__ == "__main__":
