@@ -12,13 +12,26 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-class ConversationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Conversation
-        fields = '__all__'
-
-
 class MessageSerializer(serializers.ModelSerializer):
+    def validate_message(self, data):
+        if len(str(data['message_body'])) < 1:
+            raise serializers.ValidationError("Message body cannot be empty")
+    
     class Meta:
         model = Message
-        fields = '__all__'
+        fields = ('message_id', 'message_body', 'sent_at', 'sender_id')
+        
+        
+class ConversationSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True)
+    total_messages = serializers.SerializerMethodField()
+    created_by = serializers.CharField(source='participants_id.first_name')
+    
+
+    def get_total_messages(self, obj: Conversation):
+        return len(obj.messages.all())
+    
+    
+    class Meta:
+        model = Conversation
+        fields = ('conversation_id', 'total_messages', 'created_at', 'created_by', 'participants_id', 'messages')

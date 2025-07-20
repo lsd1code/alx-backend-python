@@ -25,7 +25,10 @@ class MessageViewSet:
 
 
 def index(req: HttpRequest):
+    conversations = Conversation.objects.all()
+    serializer = ConversationSerializer(conversations, many=True)
+    
     users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
+    # serializer = UserSerializer(users, many=True)
 
     return JsonResponse({'data': serializer.data})
