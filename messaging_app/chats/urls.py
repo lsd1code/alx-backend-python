@@ -8,9 +8,9 @@ urlpatterns = [
     # path('users', UserViewSet.as_view(), name='users')
 ]
 
-router = DefaultRouter() 
-router.register('conversation', ConversationViewSet, basename="conversations")
-router.register('user', UserViewSet, basename="user")
-router.register('message', MessageViewSet, basename="message")
+routers = DefaultRouter()
+routers.register('conversation', ConversationViewSet, basename="conversations")
+routers.register('user', UserViewSet, basename="user")
+routers.register('message', MessageViewSet, basename="message")
 
 urlpatterns += router.urls
