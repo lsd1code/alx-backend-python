@@ -24,7 +24,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
-    serializer_class = MessageSerializer(queryset, many=True)
+    serializer_class = MessageSerializer
     permission_classes = [permissions.AllowAny]
 
 
