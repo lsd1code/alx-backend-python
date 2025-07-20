@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, Dict
 import unittest
 from unittest.mock import patch, PropertyMock
 from parameterized import parameterized
@@ -103,6 +103,44 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_public_repos_url.assert_called_once()
 
             mock_get_json.assert_called_once_with(test_repos_url)
+
+    @parameterized.expand([  # type:ignore
+        (
+            {"license": {"key": "my_license"}},  # repo
+            "my_license",                        # license_key
+            True                                  # expected
+        ),
+        (
+            {"license": {"key": "other_license"}},  # repo
+            "my_license",                           # license_key
+            False                                   # expected
+        ),
+        (
+            {"license": {}},  # repo
+            "my_license",     # license_key
+            False             # expected
+        ),
+        (
+            {},               # repo
+            "my_license",     # license_key
+            False             # expected
+        ),
+    ])
+    def test_has_license(self, repo: Dict[str, Any], license_key: str, expected: bool):
+        """Test license detection in repository data.
+        
+        Verifies that has_license correctly identifies:
+        - When a repo has the specified license
+        - When a repo has a different license
+        - Edge cases (missing license data)
+        
+        Args:
+            repo: Repository data structure
+            license_key: License identifier to check
+            expected: Expected boolean result
+        """
+        result = GithubOrgClient.has_license(repo, license_key)
+        self.assertEqual(result, expected)
 
 
 if __name__ == "__main__":
