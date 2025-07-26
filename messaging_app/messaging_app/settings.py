@@ -78,22 +78,6 @@ TEMPLATES = [
     # },
 ]
 
-#! Global settings for REST API
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
-
-    "DEFAULT_AUTHENTICATION_CLASSES":
-        ["rest_framework.authentication.SessionAuthentication"],
-
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-    ]
-}
-
 WSGI_APPLICATION = 'messaging_app.wsgi.application'
 
 
@@ -148,3 +132,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#! Global settings for REST API
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+
+    "DEFAULT_AUTHENTICATION_CLASSES":
+        ["rest_framework.authentication.SessionAuthentication"],
+
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
+}

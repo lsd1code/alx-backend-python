@@ -9,8 +9,11 @@ from django.http import HttpRequest
 
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):  # type:ignore
+        print(request.user)
+        
         serializer = UserSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
@@ -51,7 +54,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         serializer = MessageSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request: HttpRequest, pk=None):  # type:ignore
+    def retrieve(self, request: HttpRequest, conversations_pk: str, pk=None):  # type:ignore
         message = get_object_or_404(Message, pk=pk)
         serializer = MessageSerializer(message)
         return Response(serializer.data)
