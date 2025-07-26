@@ -5,7 +5,6 @@ import unittest
 from unittest.mock import Mock, patch, PropertyMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
-import requests
 
 class TestGithubOrgClient(unittest.TestCase):
     """Test cases for GithubOrgClient.org method."""
@@ -106,24 +105,24 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @parameterized.expand([  # type:ignore
         (
-            {"license": {"key": "my_license"}},  # repo
-            "my_license",                        # license_key
-            True                                  # expected
+            {"license": {"key": "my_license"}}, 
+            "my_license",                        
+            True                                  
         ),
         (
-            {"license": {"key": "other_license"}},  # repo
-            "my_license",                           # license_key
-            False                                   # expected
+            {"license": {"key": "other_license"}},  
+            "my_license",                           
+            False                                   
         ),
         (
-            {"license": {}},  # repo
-            "my_license",     # license_key
-            False             # expected
+            {"license": {}},  
+            "my_license",     
+            False             
         ),
         (
-            {},               # repo
-            "my_license",     # license_key
-            False             # expected
+            {},               
+            "my_license",     
+            False             
         ),
     ])
     def test_has_license(self, repo: Dict[str, Any], license_key: str, expected: bool):
@@ -183,17 +182,14 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         # Define side effect function for requests.get
         def get_side_effect(url, *args, **kwargs):
             mock_response = Mock()
-            # Route to appropriate fixture based on URL
             if url == cls.org_url.format(org="test_org"):
                 mock_response.json.return_value = cls.org_payload
             elif url == cls.repos_url:
                 mock_response.json.return_value = cls.repos_payload
             else:
-                # Default empty response for unexpected URLs
                 mock_response.json.return_value = {}
             return mock_response
 
-        # Start patcher with side effect
         cls.get_patcher = patch('client.requests.get',
                                 side_effect=get_side_effect)
         cls.mock_get = cls.get_patcher.start()
@@ -209,7 +205,6 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         repos = client.public_repos()
         self.assertEqual(repos, self.expected_repos)
 
-        # Verify API calls
         self.assertEqual(self.mock_get.call_count, 2)
         self.mock_get.assert_any_call(self.org_url.format(org="test_org"))
         self.mock_get.assert_any_call(self.repos_url)
@@ -220,7 +215,6 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         repos = client.public_repos(license="apache-2.0")
         self.assertEqual(repos, self.apache2_repos)
 
-        # Verify API calls
         self.assertEqual(self.mock_get.call_count, 2)
         self.mock_get.assert_any_call(self.org_url.format(org="test_org"))
         self.mock_get.assert_any_call(self.repos_url)
