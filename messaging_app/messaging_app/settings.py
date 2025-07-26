@@ -133,6 +133,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+DEFAULT_USER_MODEL = 'chats.User'
+
 #! Global settings for REST API
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -142,7 +144,10 @@ REST_FRAMEWORK = {
     ],
 
     "DEFAULT_AUTHENTICATION_CLASSES":
-        ["rest_framework.authentication.SessionAuthentication"],
+        [
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+            'rest_framework.authentication.SessionAuthentication'
+        ],
 
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',

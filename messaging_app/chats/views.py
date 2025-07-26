@@ -1,8 +1,8 @@
 from .models import User, Message, Conversation
 
 from .serializers import *
-from rest_framework import viewsets, permissions  # type:ignore
-from rest_framework.response import Response  # type:ignore
+from rest_framework import viewsets, permissions  
+from rest_framework.response import Response 
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 
@@ -26,8 +26,7 @@ class UserViewSet(viewsets.ViewSet):
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [permissions.AllowAny]
-    lookup_field = "pk"
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):  # type:ignore
         serializer = ConversationSerializer(self.queryset, many=True)
