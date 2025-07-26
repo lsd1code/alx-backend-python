@@ -6,10 +6,12 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 
+from .permissions import UserAccessPermissions
+
 
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,]
 
     def list(self, request):  # type:ignore
         print(request.user)

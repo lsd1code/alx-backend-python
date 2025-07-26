@@ -4,13 +4,12 @@ from django.contrib.auth.models import AbstractBaseUser
 import uuid
 
 
-class RoleChoices(models.TextChoices):
-    GUEST = "guest"
-    HOST = "host"
-    ADMIN = "admin"
-
-
 class User(AbstractBaseUser):
+    class RoleChoices(models.TextChoices):
+        GUEST = "guest"
+        HOST = "host"
+        ADMIN = "admin"
+    
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=255, null=False)
     last_name = models.CharField(max_length=255, null=False)
