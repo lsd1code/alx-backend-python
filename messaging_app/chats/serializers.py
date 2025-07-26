@@ -6,6 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            'user_id',
             'first_name',
             'last_name',
             'email',
@@ -26,8 +27,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True)
     total_messages = serializers.SerializerMethodField()
-    created_by = serializers.CharField(source='participants_id.first_name')
-    
+    created_by = serializers.StringRelatedField()    
 
     def get_total_messages(self, obj: Conversation):
         return len(obj.messages.all())
@@ -35,4 +35,4 @@ class ConversationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Conversation
-        fields = ('conversation_id', 'total_messages', 'created_at', 'created_by', 'participants_id', 'messages')
+        fields = ('conversation_id', 'created_by', 'total_messages', 'created_at', 'participants_id', 'messages')

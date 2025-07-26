@@ -11,15 +11,13 @@ class RoleChoices(models.TextChoices):
 
 
 class User(AbstractBaseUser):
-    user_id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=255, null=False)
     last_name = models.CharField(max_length=255, null=False)
     email = models.EmailField(unique=True, null=False)
     password_hash = models.CharField(max_length=255, null=False)
     phone_number = models.CharField(max_length=11, null=False)
-    role = models.CharField(
-        max_length=10, choices=RoleChoices, default=RoleChoices.GUEST)
+    role = models.CharField(max_length=10, choices=RoleChoices, default=RoleChoices.GUEST)
     creates_at = models.DateField(auto_now=True)
 
     is_staff = models.BooleanField(default=False)
@@ -32,24 +30,20 @@ class User(AbstractBaseUser):
 
 
 class Conversation(models.Model):
-    conversation_id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    participants_id = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="conversation")
+    conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    participants_id = models.ManyToManyField(User, blank=True, null=True) #type:ignore
     created_at = models.DateField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations", null=True)
 
     def __str__(self) -> str:
         return f'Conversation {self.conversation_id}'
 
 
 class Message(models.Model):
-    message_id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    sender_id = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="message")
+    message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="message")
     message_body = models.CharField(max_length=255, blank=False, null=False)
-    conversation = models.ForeignKey(
-        Conversation, on_delete=models.CASCADE, related_name='messages')
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     sent_at = models.DateField(auto_now=True)
 
     def __str__(self) -> str:
