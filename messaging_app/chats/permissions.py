@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from .models import Conversation
 
 class UserAccessPermissions(permissions.BasePermission):
   def has_permission(self, request, view):
@@ -7,12 +8,19 @@ class UserAccessPermissions(permissions.BasePermission):
 
 
 class IsParticipantOfConversation(permissions.BasePermission):
-  def has_permission(self):
+  def has_permission(self, request, view):
     user = request.user
     
     if not user.is_authenticated:
       return False
     
-    # todo: check if the user is a participant
+    if request.method == "DELETE":
+      pass
     
+    if request.method == "PUT":
+      pass
+    
+    if request.method == "PATCH":
+      pass
+        
     return True

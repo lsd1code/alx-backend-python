@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 
-from .permissions import UserAccessPermissions
+from .permissions import (UserAccessPermissions, IsParticipantOfConversation)
 
 
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated, UserAccessPermissions]
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):  # type:ignore        
         serializer = UserSerializer(self.queryset, many=True)
@@ -26,7 +26,7 @@ class UserViewSet(viewsets.ViewSet):
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsParticipantOfConversation]
 
     def list(self, request):  # type:ignore
         serializer = ConversationSerializer(self.queryset, many=True)
