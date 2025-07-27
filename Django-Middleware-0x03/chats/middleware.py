@@ -2,7 +2,7 @@ import time
 import threading
 from datetime import datetime
 from django.http import HttpResponseForbidden
-
+from .models import User
 
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
@@ -56,7 +56,7 @@ class OffensiveLanguageMiddleware:
         response = self.get_response(request)
 
         return response
-    
+
     def timer_function(self):
         print("timer_start")
 
@@ -78,3 +78,16 @@ class OffensiveLanguageMiddleware:
             ip = request.META.get('REMOTE_ADDR')
 
         return ip
+
+
+class RolepermissionMiddleware:
+    def __init__(self, get_response) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = request.user
+
+        if not user.is_superuser:
+            return HttpResponseForbidden('Only admin and moderator can access this route')
+        
+        return self.get_response(request)
