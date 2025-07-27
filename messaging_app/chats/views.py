@@ -40,6 +40,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):  # type:ignore
         user = User.objects.first()
         conversation = Conversation(created_by=user)
+
         conversation.save()
 
         return Response({'data': True})
@@ -47,7 +48,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request: HttpRequest, conversations_pk: str):
         serializer = MessageSerializer(self.queryset, many=True)
@@ -60,13 +61,15 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def create(self, request: HttpRequest, *args, **kwargs):  # type:ignore
         conversation = Conversation.objects.first()
-        user = User.objects.first()
+        user = User.objects.get(user_id=request.data["sender_id"])
 
         message = Message(
             sender_id=user,
             message_body=request.data['message_body'],  # type:ignore
             conversation=conversation
         )
-
+        
+        conversation.participants_id.add(user)
         message.save()
+        
         return Response("create new message", status=201)

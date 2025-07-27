@@ -30,9 +30,9 @@ class User(AbstractBaseUser):
 
 class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    participants_id = models.ManyToManyField(User, blank=True, null=True) #type:ignore
     created_at = models.DateField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations", null=True)
+    participants_id = models.ManyToManyField(User, related_name='participants_id', null=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations", null=False)
 
     def __str__(self) -> str:
         return f'Conversation {self.conversation_id}'
