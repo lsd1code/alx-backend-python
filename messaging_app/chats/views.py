@@ -1,7 +1,7 @@
 from .models import User, Message, Conversation
 
 from .serializers import *
-from rest_framework import viewsets, permissions  
+from rest_framework import viewsets, permissions, status  
 from rest_framework.response import Response 
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
@@ -29,7 +29,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsParticipantOfConversation]
 
     def list(self, request):  # type:ignore
-        serializer = ConversationSerializer(self.queryset, many=True)
+        user = request.user
+        user_id = request.data["user_id"]
+        qs = super().get_queryset().filter(created_by=user_id)        
+        serializer = ConversationSerializer(qs, many=True)    
+            
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):  # type:ignore
@@ -51,7 +55,14 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request: HttpRequest, conversations_pk: str):
-        serializer = MessageSerializer(self.queryset, many=True)
+        conversation = Conversation.objects.get(conversation_id=conversations_pk)
+        user_id = request.data["user_id"]
+        
+        # is_participant = conversation.participants_id.get(user_id=user_id)
+        qs = super().get_queryset().filter(sender_id=user_id)
+        print(qs)
+        serializer = MessageSerializer(qs, many=True)
+        
         return Response(serializer.data)
 
     def retrieve(self, request: HttpRequest, conversations_pk: str, pk=None):  # type:ignore
