@@ -1,4 +1,5 @@
 from .models import User, Message, Conversation
+from .pagination import CustomPageNumberPagination
 
 from .serializers import *
 from rest_framework import viewsets, permissions, status  
@@ -53,6 +54,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
 
     def list(self, request: HttpRequest, conversations_pk: str):
         conversation = Conversation.objects.get(conversation_id=conversations_pk)
