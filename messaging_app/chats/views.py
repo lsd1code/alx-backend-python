@@ -12,13 +12,13 @@ from .permissions import (UserAccessPermissions, IsParticipantOfConversation)
 
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
-    def list(self, request):  # type:ignore        
+    def list(self, request):         
         serializer = UserSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):  # type:ignore
+    def retrieve(self, request, pk=None): 
         user = get_object_or_404(User, pk=pk)
         serializer = UserSerializer(user)
         return Response(serializer.data)
@@ -27,27 +27,27 @@ class UserViewSet(viewsets.ViewSet):
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [permissions.IsAuthenticated, IsParticipantOfConversation]
-
-    def list(self, request):  # type:ignore
-        user = request.user
-        user_id = request.data["user_id"]
+    permission_classes = [permissions.IsAuthenticated, IsParticipantOfConversation] 
+    
+    def list(self, request):  
+        user = request.user 
+        user_id = request.data["user_id"] 
         qs = super().get_queryset().filter(created_by=user_id)        
         serializer = ConversationSerializer(qs, many=True)    
             
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):  # type:ignore
+    def retrieve(self, request, pk=None):  
         conversation = get_object_or_404(Conversation, pk=pk)
         serializer = ConversationSerializer(conversation)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):  # type:ignore
+    def create(self, request, *args, **kwargs):  
         user = User.objects.first()
         conversation = Conversation(created_by=user)
 
         conversation.save()
-
+        conversation.participants_id.add(user) #type:ignore
         return Response({'data': True})
 
 
@@ -67,25 +67,24 @@ class MessageViewSet(viewsets.ModelViewSet):
         
         qs = Message.objects.filter(sender_id=user_id)
         serializer = MessageSerializer(qs, many=True)
-        
         return Response(serializer.data)
 
-    def retrieve(self, request: HttpRequest, conversations_pk: str, pk=None):  # type:ignore
+    def retrieve(self, request: HttpRequest, conversations_pk: str, pk=None):  
         message = get_object_or_404(Message, pk=pk)
         serializer = MessageSerializer(message)
         return Response(serializer.data)
 
-    def create(self, request: HttpRequest, *args, **kwargs):  # type:ignore
+    def create(self, request: HttpRequest, *args, **kwargs):  
         conversation = Conversation.objects.first()
         user = User.objects.get(user_id=request.data["sender_id"])
 
         message = Message(
             sender_id=user,
-            message_body=request.data['message_body'],  # type:ignore
+            message_body=request.data['message_body'],  
             conversation=conversation
         )
         
-        conversation.participants_id.add(user)
         message.save()
-        
+        conversation.participants_id.add(user)
+
         return Response("create new message", status=201)
