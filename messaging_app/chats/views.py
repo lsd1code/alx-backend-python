@@ -58,9 +58,12 @@ class MessageViewSet(viewsets.ModelViewSet):
         conversation = Conversation.objects.get(conversation_id=conversations_pk)
         user_id = request.data["user_id"]
         
-        # is_participant = conversation.participants_id.get(user_id=user_id)
-        qs = super().get_queryset().filter(sender_id=user_id)
-        print(qs)
+        is_participant = conversation.participants_id.filter(user_id=user_id).exists()
+        
+        if not is_participant:
+            return Response({"data": "You are not a participant of this conversation"}, status.HTTP_403_FORBIDDEN)
+        
+        qs = Message.objects.filter(sender_id=user_id)
         serializer = MessageSerializer(qs, many=True)
         
         return Response(serializer.data)
