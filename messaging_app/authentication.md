@@ -31,4 +31,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     ...
 ]
+
+send requests to the first url path to get access and refresh tokens
+for admin users = [username, password]
 ```
