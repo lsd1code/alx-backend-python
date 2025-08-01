@@ -20,6 +20,9 @@ class User(AbstractUser):
         related_query_name="messaging_user_permission",
     )
 
+    def __str__(self) -> str:
+        return f"{self.username}"
+
 
 class Message(models.Model):
     sender = models.ForeignKey(
@@ -27,7 +30,7 @@ class Message(models.Model):
     receiver = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="receiver_messages")
     content = models.TextField()
-    timestamp = models.DateTimeField(auto_created=True)
+    timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f'From {self.sender.username} to {self.receiver.username}'
@@ -38,3 +41,6 @@ class Notification(models.Model):
         User, on_delete=models.CASCADE, related_name="notifications")
     message = models.ForeignKey(
         Message, on_delete=models.CASCADE, related_name="messages")
+
+    def __str__(self) -> str:
+        return f'Notification for {self.user.username}'
