@@ -11,9 +11,4 @@ def send_notification_when_message_is_created(sender, instance, created, **kwarg
     """
 
     if created:
-        user = instance.receiver
-
-        n = Notification(user=user, message=instance)
-        n.save()
-
-        print("create new notification")
+        Notification.objects.create(user=instance.receiver, message=instance)
