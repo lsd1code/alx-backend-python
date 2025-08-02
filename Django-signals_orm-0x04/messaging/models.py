@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from .managers import UnreadMessagesManager
+
 
 class User(AbstractUser):
     groups = models.ManyToManyField(
@@ -38,6 +40,9 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
     unread = models.BooleanField(default=True)
+
+    objects = models.Manager()
+    unread = UnreadMessagesManager()
 
     def __str__(self) -> str:
         return f'Content: {self.content}'

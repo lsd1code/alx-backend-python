@@ -1,11 +1,12 @@
 from django.db import models
+from django.shortcuts import get_object_or_404
 
-from .models import Message
+from .models import User
 
 
 class UnreadMessagesManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset()
+    def unread(self):
+        return self.get_queryset().filter(unread=True)
 
-    def get_unread_messages(self):
-        pass
+    def unread_for_user(self, user_id):
+        return self.get_queryset().filter(sender=get_object_or_404(User, pk=user_id))

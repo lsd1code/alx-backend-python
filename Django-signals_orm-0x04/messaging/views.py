@@ -1,4 +1,5 @@
 from .models import User, Message
+from .managers import UnreadMessagesManager
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -12,6 +13,12 @@ from rest_framework.request import Request
 def message_list(request: Request):
     messages = Message.objects.all()  # [21, 22, 23]
     return Response(f"Total Messages: {len(messages)}")
+
+
+@api_view(['GET'])
+def unread_message_list(request: Request):
+    m = Message.unread.unread_for_user(3).only()
+    return Response(f"Unread messages: {len(m)}")
 
 
 @api_view(['GET'])

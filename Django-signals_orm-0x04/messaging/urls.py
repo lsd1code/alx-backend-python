@@ -4,12 +4,13 @@ from .views import (
     message,
     create_message,
     message_list,
-    reply_message
+    reply_message,
+    unread_message_list
 )
 
 urlpatterns = [
     path("users/<int:user_id>", delete_user, name="delete_user"),
-    path("messages/", message_list, name="message_list"),
+    path("messages/", unread_message_list, name="message_list"),
     path("messages/create", create_message, name="create_message"),
     path("messages/<int:message_id>", message, name="message"),
     path(
