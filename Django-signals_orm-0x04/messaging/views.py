@@ -3,11 +3,6 @@ from django.http import HttpResponse
 
 from .models import User, Notification, Message
 
-def index(request):
-    sender = User.objects.first()
-    receiver = User.objects.last()
-    
-    m = Message(sender=sender, receiver=receiver, content="message content")
-    m.save()
 
+def index(request):
     return HttpResponse("hello test")
