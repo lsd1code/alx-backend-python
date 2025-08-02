@@ -46,7 +46,8 @@ def reply_message(request: Request, message_id: int):
     reply_receiver = parent_message.sender
 
     Message.objects.create(
-        sender=reply_sender,
+        # sender=reply_sender,
+        sender=request.user,
         receiver=reply_receiver,
         parent_message=parent_message,
         content=request.data['content']  # type:ignore
