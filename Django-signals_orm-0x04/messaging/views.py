@@ -16,7 +16,7 @@ def message_list(request: Request):
 
 @api_view(['GET'])
 def message(request: Request, message_id: int):
-    message = Message.objects.select_related().prefetch_related("replies").filter(pk=message_id).first()
+    message = Message.objects.filter(pk=message_id).select_related().prefetch_related("replies").first()
     replies = message.replies.all()  # type:ignore
 
     return Response(f"Message: {message.content}, replies: {len(replies)}")
