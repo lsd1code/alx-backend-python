@@ -48,6 +48,7 @@ class Notification(models.Model):
 
 
 class MessageHistory(models.Model):
-    message = models.ForeignKey(
-        Message, on_delete=models.CASCADE, related_name="history")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="history")
+    edited_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="edited_messages")
+    edited_at = models.DateTimeField(auto_now=True)
     old_content = models.TextField()

@@ -17,7 +17,8 @@ def log_and_save_old_content_before_edit(sender, instance, **kwargs):
         if message.content != instance.content:
             MessageHistory.objects.create(
                 message=message,
-                old_content=message.content
+                old_content=message.content,
+                edited_by=message.sender
             )
             print("message updated")
 
