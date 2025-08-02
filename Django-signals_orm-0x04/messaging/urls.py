@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import deleter_user
+from .views import delete_user
 
 urlpatterns = [
-    path("user/<int:user_id>", deleter_user, name="delete_user"),
+    path("user/<int:user_id>", delete_user, name="delete_user"),
 ]
