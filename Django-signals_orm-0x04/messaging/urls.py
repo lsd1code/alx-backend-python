@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import index
+from .views import deleter_user
 
 urlpatterns = [
-    path("", index, name="index")
+    path("user/<int:user_id>", deleter_user, name="delete_user"),
 ]

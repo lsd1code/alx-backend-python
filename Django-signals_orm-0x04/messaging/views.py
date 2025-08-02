@@ -1,13 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 from .models import User, Notification, Message
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.request import Request
 
 
-def index(request):
-    # m = Message.objects.all().last()
-    # print(m.history.all())
-    # m.content = "new update here"
-    # m.save()
+@api_view(['DELETE'])
+def deleter_user(request: Request, user_id: int):
+    """
+    Implement a post_delete signal on the User model to delete all messages, notifications, and message histories associated with the user.
 
-    return HttpResponse("hello test")
+    Ensure that foreign key constraints are respected during the deletion process by using CASCADE or custom signal logic.
+    """
+    user = get_object_or_404(User, pk=user_id)
+
+    return Response("delete user view")
