@@ -26,9 +26,14 @@ class User(AbstractUser):
 
 class Message(models.Model):
     sender = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="sender_messages")
+        User, on_delete=models.CASCADE, related_name="sender_messages"
+    )
     receiver = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="receiver_messages")
+        User, on_delete=models.CASCADE, related_name="receiver_messages"
+    )
+    parent_message = models.ForeignKey(
+        'self', on_delete=models.SET_NULL, related_name="replies", blank=True, null=True
+    )
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
@@ -48,7 +53,9 @@ class Notification(models.Model):
 
 
 class MessageHistory(models.Model):
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="history")
-    edited_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="edited_messages")
+    message = models.ForeignKey(
+        Message, on_delete=models.CASCADE, related_name="history")
+    edited_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="edited_messages")
     edited_at = models.DateTimeField(auto_now=True)
     old_content = models.TextField()
