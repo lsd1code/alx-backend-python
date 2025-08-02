@@ -16,9 +16,14 @@ def message_list(request: Request):
 
 @api_view(['GET'])
 def message(request: Request, message_id: int):
-    message = Message.objects.filter(pk=message_id).select_related().prefetch_related("replies").first()
-    replies = message.replies.all()  # type:ignore
+    message = Message.objects.filter(
+        pk=message_id
+    ).select_related().prefetch_related("replies").first()
 
+    if not message:
+        return Response("404 Message Not Found", status.HTTP_404_NOT_FOUND)
+
+    replies = message.replies.all()  # type:ignore
     return Response(f"Message: {message.content}, replies: {len(replies)}")
 
 
@@ -34,7 +39,6 @@ def create_message(request: Request):
         return Response("Message content cannot be empty", status.HTTP_204_NO_CONTENT)
 
     Message.objects.create(sender=sender, receiver=receiver, content=content)
-
     return Response(f"Message created", status.HTTP_201_CREATED)
 
 

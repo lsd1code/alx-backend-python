@@ -42,7 +42,9 @@ def log_and_save_old_content_before_edit(sender, instance, **kwargs):
                 old_content=message.content,
                 edited_by=message.sender
             )
-            print("message updated")
+            
+            message.edited = True
+            message.save()
 
 
 @receiver(post_save, sender=Message, dispatch_uid="create_new_notification")

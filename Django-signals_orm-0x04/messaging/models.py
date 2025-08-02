@@ -37,6 +37,7 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
+    unread = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return f'Content: {self.content}'
