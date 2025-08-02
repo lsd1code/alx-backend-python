@@ -4,16 +4,26 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_delete
 
 
-"""
-Implement a post_delete signal on the User model to delete all messages, notifications, and message histories associated with the user.
-
-Ensure that foreign key constraints are respected during the deletion process by using CASCADE or custom signal logic.
-"""
-
-
 @receiver(post_delete, sender=User, dispatch_uid="delete_user")
 def delete_user_related_data(sender, instance, **kwargs):
-    print("delete user signal fired")
+    """
+    Signal on the User model to delete all messages, notifications, and message histories associated with the user
+    """
+    notifications = Notification.objects.filter(user=instance)
+    messages = Notification.objects.filter(sender=instance)
+    message_histories = MessageHistory.objects.filter(edited_by=instance)
+
+    if notifications:
+        for n in notifications:
+            n.delete()
+
+    if messages:
+        for m in messages:
+            m.delete()
+
+    if message_histories:
+        for m in message_histories:
+            m.delete()
 
 
 @receiver(pre_save, sender=Message, dispatch_uid="update_message")
