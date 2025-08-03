@@ -124,3 +124,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEFAULT_AUTH_MODEL = "messaging.User"
+
+CACHES = { 
+    'default': { 
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 
+        'LOCATION': 'unique-snowflake',
+    }
+}

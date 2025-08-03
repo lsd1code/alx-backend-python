@@ -1,14 +1,15 @@
 from .models import User, Message
-from .managers import UnreadMessagesManager
 
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from django.views.decorators.cache import cache_page
 
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 
 
+@cache_page(60)
 @api_view(['GET'])
 def message_list(request: Request):
     messages = Message.objects.all()  # [21, 22, 23]
