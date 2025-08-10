@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from .models import User, Message
 
 from django.shortcuts import get_object_or_404
@@ -81,6 +82,8 @@ def delete_user(request: Request, user_id: int):
 
     return Response("User deleted successfully", status.HTTP_204_NO_CONTENT)
 =======
+=======
+>>>>>>> e696047 (FEAT: setup a docker environment)
 from .models import User, Message
 
 from django.shortcuts import get_object_or_404
@@ -160,4 +163,7 @@ def delete_user(request: Request, user_id: int):
     user.delete()
 
     return Response('User deleted successfully', status.HTTP_204_NO_CONTENT)
+<<<<<<< HEAD
+>>>>>>> e696047 (FEAT: setup a docker environment)
+=======
 >>>>>>> e696047 (FEAT: setup a docker environment)

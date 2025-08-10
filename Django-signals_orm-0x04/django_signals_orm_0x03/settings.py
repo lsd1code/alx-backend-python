@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 """
 Django settings for django_signals_orm_0x03 project.
 
@@ -133,6 +134,8 @@ CACHES = {
     }
 }
 =======
+=======
+>>>>>>> e696047 (FEAT: setup a docker environment)
 """
 Django settings for django_signals_orm_0x03 project.
 
@@ -258,5 +261,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+<<<<<<< HEAD
+DEFAULT_AUTH_MODEL = "messaging.User"
+>>>>>>> e696047 (FEAT: setup a docker environment)
+=======
 DEFAULT_AUTH_MODEL = "messaging.User"
 >>>>>>> e696047 (FEAT: setup a docker environment)
