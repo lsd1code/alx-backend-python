@@ -1,14 +1,10 @@
 FROM python:3.10
 
-COPY chats /api/
-COPY messaging_app /api/
-COPY authentication.md /api/
-COPY db.sqlite3 /api/
-COPY manage.py /api/
-COPY post_man-Collections /api/
-COPY requirements.txt /api/
+ENV PYTHONNUNBUFFERED 1
 
-WORKDIR /api
+WORKDIR /app
+
+COPY . /app
 
 RUN pip install --no-cache -r requirements.txt
 
