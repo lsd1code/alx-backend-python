@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  database:
+  db:
     image: mysql:8
     ports:
       - "3306:3306"
@@ -24,4 +24,4 @@ services:
       - .:/app
       - /tmp/app/mysqld:/run/mysqld
     depends_on:
-      - database
+      - db
