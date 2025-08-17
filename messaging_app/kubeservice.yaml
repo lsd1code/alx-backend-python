@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service-blue
+spec:
+  selector:
+    app: messaging-app
+    version: blue
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service-green
+spec:
+  selector:
+    app: messaging-app
+    version: green
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: split.smi-spec.io/v1alpha4
+kind: TrafficSplit
+metadata:
+  name: messaging-split
+spec:
+  service: messaging-service
+  backends:
+    - service: messaging-service-blue
+      weight: "90"
+    - service: messaging-service-green
+      weight: "10"
