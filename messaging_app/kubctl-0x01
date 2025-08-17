@@ -1,0 +1,9 @@
+#!/bin/bash
+
+kubectl scale deployment messaging-app-deployment --replicas=3
+
+kubectl get pods -l app='messaging-app'
+
+wrk -t4 -c100 -d30s http://localhost:8000/api/
+
+kubectl top pods
