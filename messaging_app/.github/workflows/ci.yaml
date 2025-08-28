@@ -1,0 +1,88 @@
+name: Django Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update && sudo apt-get upgrade
+        sudo apt-get install -y default-libmysqlclient-dev build-essential
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-django pytest-cov mysqlclient
+
+    - name: Create test database
+      run: |
+        mysql -h 127.0.0.1 -P 3306 -u root -proot <<EOF
+        CREATE DATABASE IF NOT EXISTS test_db;
+        CREATE USER IF NOT EXISTS 'test_user'@'%' IDENTIFIED BY 'test_password';
+        GRANT ALL PRIVILEGES ON test_db.* TO 'test_user'@'%';
+        FLUSH PRIVILEGES;
+        EOF
+
+    - name: Run migrations
+      env:
+        DJANGO_SETTINGS_MODULE: messaging_app.settings  
+        DATABASE_URL: mysql://test_user:test_password@127.0.0.1:3306/test_db
+      run: |
+        python manage.py migrate --noinput
+
+    - name: Run tests
+      env:
+        DJANGO_SETTINGS_MODULE: messaging_app.settings  # Update with your settings module
+        DATABASE_URL: mysql://test_user:test_password@127.0.0.1:3306/test_db
+        PYTHONPATH: .
+      run: |
+        pytest --cov=. --cov-report=xml
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: |
+          coverage.xml
+          htmlcov/
