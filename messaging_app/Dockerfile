@@ -1,13 +1,23 @@
-FROM python:3.10
+FROM python:3.13-slim-bookworm
 
-ENV PYTHONNUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTEECODE=1
+
+ENV PYTHONNUNBUFFERED=1
 
 WORKDIR /app
 
-COPY . /app
+RUN apt update && apt upgrade
 
-RUN pip install --no-cache -r requirements.txt
+RUN apt-get install -y curl
 
-EXPOSE 8000
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+COPY ./requirements.txt .
+
+RUN uv pip install -r requirements.txt --system
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
